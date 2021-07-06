@@ -36,19 +36,45 @@ class PIController():
 
     self.d_log = [0 for _ in range(self.d_time)]
     self.d_log_p = 0
-
+    
+    self.l_p, self.l_i, self.l_d, self.l_f = (0,0,0,0)
+    self.summ = 0
     self.reset()
+
+  def read_tune(self):
+    with open("/data/openpilot/tune.txt","r") as f:
+      ls = []
+      try:
+        for line in f:
+          ls.append(float(line))
+        self.l_p = ls[0]
+        self.l_i = ls[1]
+        self.l_d = ls[2]
+        self.l_f = ls[3]
+        if self.l_f+self.l_d+self.l_i+self.l_p != self.summ:
+          print("new tune pidf:", self.l_p, self.l_i, self.l_d, self.l_f)
+        self.summ = self.l_f+self.l_d+self.l_i+self.l_p
+      except Exception:
+        self.summ = 0
+        print("_____________________________________________\n FILE READING ERROR\n'''''''''''''''''''''''''''''''''''''''''''''''''''")
+
 
   @property
   def k_p(self):
+    if self.summ != 0:
+      return self.l_p
     return interp(self.speed, self._k_p[0], self._k_p[1])
 
   @property
   def k_i(self):
+    if self.summ != 0:
+      return self.l_i
     return interp(self.speed, self._k_i[0], self._k_i[1])
 
   @property
   def k_d(self):
+    if self.summ != 0:
+      return self.l_d
     return interp(self.speed, self._k_d[0], self._k_d[1])
 
   def _check_saturation(self, control, check_saturation, error):
@@ -77,10 +103,14 @@ class PIController():
     self.d_log = [0 for _ in range(self.d_time)]
 
   def update(self, setpoint, measurement, speed=0.0, check_saturation=True, override=False, feedforward=0., deadzone=0., freeze_integrator=False):
+    self.read_tune()
     self.speed = speed
 
     error = float(apply_deadzone(setpoint - measurement, deadzone))
     self.p = error * self.k_p
+
+    if self.summ != 0:
+      self.k_f = self.l_f
     self.f = feedforward * self.k_f
 
     new_smooth_error = (1 - 1/self.angle_time) * self.smooth_error + error / self.angle_time
