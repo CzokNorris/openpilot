@@ -9,7 +9,7 @@ from selfdrive.controls.lib.drive_helpers import get_lag_adjusted_curvature
 from common.numpy_fast import clip
 MODEL_MIN_SPEED = 70 / 3.6 # minimum speed to use model
 
-STEER_FACTOR = 300/2 # We can add 4 out of 300 cNm per one output frame which runs at 50 Hz. So the factor is 300 due to the unit but /2 because 20ms instead of 10 
+STEER_FACTOR = 300/4 # We can add 4 out of 300 cNm per one output frame which runs at 50 Hz. So the factor is 300 due to the unit but /2 because 20ms instead of 10 
 STEER_DELTA_UP = 4
 STEER_DELTA_DOWN = 10
 
