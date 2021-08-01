@@ -7,14 +7,15 @@ import numpy as np
 
 from selfdrive.controls.lib.drive_helpers import get_lag_adjusted_curvature
 from common.numpy_fast import clip
-MODEL_MIN_SPEED = 70 / 3.6 # minimum speed to use model
+from random import random
 
-STEER_FACTOR = 300 # We can add 4 out of 300 cNm per one output frame which runs at 50 Hz. So the factor is 300 due to the unit but /2 because 20ms instead of 10 
-STEER_DELTA_UP = 2
-STEER_DELTA_DOWN = 5
+MODEL_MIN_SPEED = 90 / 3.6 # minimum speed to use model
+
+STEER_FACTOR = 300/2 # We can add 4 out of 300 cNm per one output frame which runs at 50 Hz. So the factor is 300 due to the unit but /2 because 20ms instead of 10 
+STEER_DELTA_UP = 4
+STEER_DELTA_DOWN = 10
 
 def apply_std_steer_torque_limits(apply_torque, apply_torque_last):
-  # print(apply_torque, apply_torque_last)
   if apply_torque_last > 0:
     apply_torque = clip(apply_torque, max(apply_torque_last - STEER_DELTA_DOWN, -STEER_DELTA_UP), apply_torque_last + STEER_DELTA_UP)
   else:
@@ -26,18 +27,16 @@ def apply_std_steer_torque_limits(apply_torque, apply_torque_last):
 
 #steering angle, speed, torque, IMU_linear, IMU_angular
 norm = (41.70000076293945, 39.09857177734375, 1.0, [19.161849975585938, 8.428146362304688, 11.452590942382812], [0.18414306640625, 0.8147430419921875, 0.1421051025390625])
-groups = [4, 20, 20, 20, 20]
+groups = [1, 10, 4, 4]
 
 #Data storage timings
-prev_data = 300
-fwd_data = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
-#PC
-
-#C2
+prev_data = 100
+M_prev_len = 50
+fwd_data = [20*i for i in range(1, 4)]
 try:
-  wb = np.load('/data/openpilot/model_L1_weights.npz', allow_pickle=True)
+  wb = np.load('/data/openpilot/model_M_weights.npz', allow_pickle=True)
 except:
-  wb = np.load('/home/gregor/openpilot/model_L1_weights.npz', allow_pickle=True)
+  wb = np.load('/home/gregor/openpilot/model_M_weights.npz', allow_pickle=True)
 w, b = wb['wb']
 
 def model(x):
@@ -47,25 +46,26 @@ def model(x):
   l1 = np.dot(l0, w[1]) + b[1]
   l1 = np.maximum(0, l1)
   l2 = np.dot(l1, w[2]) + b[2]
-  l2 = np.tanh(l2)
-  return l2
+  l2 = np.maximum(0, l2)
+  l3 = np.dot(l2, w[3]) + b[3]
+  l3 = np.tanh(l3)
+  return l3
 
-def get_model_input(phi, v, M, IMU_v, IMU_alpha, M_fut):
+
+def get_model_input(phi, v, IMU_v, IMU_alpha, M, phi_fut):
   phi_out = phi.reshape(-1, groups[0]).mean(axis=1)/norm[0]
   v_out = v.reshape(-1, groups[1]).mean(axis=1)/norm[1]
-  M_out_l = M.reshape(-1, groups[2]).mean(axis=1)/norm[2]
-  M_out_r = M_fut.reshape(-1, groups[2]).mean(axis=1)/norm[2]
-  M_out = np.concatenate([M_out_l, M_out_r])
-  IMU_v_out = [IMU_v[i].reshape(-1, groups[3]).mean(axis=1)/norm[3][i] for i in range(3)]
-  IMU_alpha_out = [IMU_alpha[i].reshape(-1, groups[4]).mean(axis=1)/norm[4][i] for i in range(3)]
+  IMU_v_out = [IMU_v[i].reshape(-1, groups[2]).mean(axis=1)/norm[3][i] for i in range(3)]
+  IMU_alpha_out = [IMU_alpha[i].reshape(-1, groups[3]).mean(axis=1)/norm[4][i] for i in range(3)]
+  M_out = M.reshape(-1, M_prev_len).mean(axis=1)
 
-  return np.concatenate([phi_out, v_out, M_out, IMU_v_out[0], IMU_v_out[1], IMU_v_out[2], IMU_alpha_out[0], IMU_alpha_out[1], IMU_alpha_out[2]])
+  return np.concatenate([phi_out, v_out, IMU_v_out[0], IMU_v_out[1], IMU_v_out[2], IMU_alpha_out[0], IMU_alpha_out[1], IMU_alpha_out[2], M_out, phi_fut])
 
 class ModelControls:
   def __init__(self):
     self.phi = np.zeros((prev_data,))
     self.v = np.zeros((prev_data,))
-    self.M = np.zeros((prev_data,))
+    self.M = np.zeros((M_prev_len,))
     self.IMU_v = [np.zeros((prev_data,)) for _ in range(3)]
     self.IMU_alpha = [np.zeros((prev_data,)) for _ in range(3)]
 
@@ -76,7 +76,7 @@ class ModelControls:
 
     if not self.active and v > MODEL_MIN_SPEED:
       self.active = True
-    if self.active and v < MODEL_MIN_SPEED - 10/3.6:
+    if self.active and v < MODEL_MIN_SPEED - 5/3.6:
       self.active = False
 
     # spravi phi, v, M v numPy array
@@ -101,20 +101,11 @@ class ModelControls:
 
       steering_angle[i] = math.degrees(VM.get_steer_from_curvature(-desired_curvature, self.v[-1])) + angle_offset
 
-    M_fut = np.ones((fwd_data[-1],))*self.M[-1]
-
-    model_input = get_model_input(self.phi, self.v, self.M, self.IMU_v, self.IMU_alpha, M_fut)
-    predicted_angle = model(model_input) * norm[0]
-
-    #L1 je negativen ce moramo precej bolj zaviti
-    test_len = 6 # Max 10
-    L1 = sum([predicted_angle[i]-steering_angle[i] for i in range(test_len)])/ test_len
-
-    #Poenostavljena logika: Ali je trenutni navor dovolj velik?
-    if L1 > 0:
-      self.outputTorque = apply_std_steer_torque_limits(-STEER_FACTOR, STEER_FACTOR*self.M[-1])/STEER_FACTOR
-    else:
-      self.outputTorque = apply_std_steer_torque_limits(STEER_FACTOR, STEER_FACTOR*self.M[-1])/STEER_FACTOR
+    model_input = get_model_input(self.phi, self.v, self.IMU_v, self.IMU_alpha, self.M, np.array(steering_angle)/norm[0])
+    fut_M = model(model_input)
+    self.outputTorque = fut_M[0].item()
+    if random() < 0.01:
+      print("predicted:", fut_M[0], "prev:", self.M[-1])
 
 
 # Create our controller
