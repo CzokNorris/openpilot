@@ -10,12 +10,11 @@ from selfdrive.controls.lib.drive_helpers import get_lag_adjusted_curvature
 from common.numpy_fast import clip
 from random import random
 
-MODEL_MIN_SPEED = 110 / 3.6 # minimum speed to use model
+MODEL_MIN_SPEED = 90 / 3.6 # minimum speed to use model
 
-STEER_FACTOR = 1500 
 
 #steering angle, speed, torque, IMU_linear, IMU_angular
-norm = (12.614299774169922, 36.97553634643555, 1.0, [16.2928466796875, 4.8987274169921875, 7.5546875], [0.100494384765625, 0.366119384765625, 0.1334991455078125])
+norm = (8.699999809265137, 34.91470718383789, 1.0, [16.254562377929688, 4.331634521484375, 5.190582275390625], [0.05810546875, 0.2753143310546875, 0.081207275390625])
 groups = [2, 10, 25, 10, 10]
 
 #Data storage timings
@@ -23,9 +22,9 @@ prev_data = 100
 fwd_data = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 
 try:
-  wb = np.load('/data/openpilot/model_spektor_weights.npz', allow_pickle=True)
+  wb = np.load('/data/openpilot/model_spektorV2_weights.npz', allow_pickle=True)
 except:
-  wb = np.load('/home/gregor/openpilot/model_spektor_weights.npz', allow_pickle=True)
+  wb = np.load('/home/gregor/openpilot/model_spektorV2_weights.npz', allow_pickle=True)
 w, b = wb['wb']
 
 def model(x):
@@ -50,25 +49,6 @@ def get_model_input(phi, v, M, IMU_v, IMU_alpha, M_fut):
   IMU_alpha_out = [IMU_alpha[i].reshape(-1, groups[4]).mean(axis=1)/norm[4][i] for i in range(3)]
 
   return np.concatenate([phi_out, v_out, M_out, IMU_v_out[0], IMU_v_out[1], IMU_v_out[2], IMU_alpha_out[0], IMU_alpha_out[1], IMU_alpha_out[2]])
-
-
-maxSteer = 1500
-up = 10
-down = 25
-def apply_steer_torque_limits(apply_torque, apply_torque_last):
-  apply_torque = clip(apply_torque, -maxSteer, maxSteer)
-
-  # slow rate if steer torque increases in magnitude
-  if apply_torque_last > 0:
-    apply_torque = clip(apply_torque,
-                        max(apply_torque_last - down, -up),
-                        apply_torque_last + up)
-  else:
-    apply_torque = clip(apply_torque,
-                        apply_torque_last - up,
-                        min(apply_torque_last + down, up))
-
-  return int(round(float(apply_torque)))
 
 class ModelControls:
   def __init__(self):
@@ -129,9 +109,9 @@ class ModelControls:
 
     #Poenostavljena logika: Ali je trenutni navor dovolj velik?
     if L1 > 0:
-      self.outputTorque = apply_steer_torque_limits(-STEER_FACTOR, STEER_FACTOR*self.outputTorque)/STEER_FACTOR
+      self.outputTorque += 0.01
     else:
-      self.outputTorque = apply_steer_torque_limits(STEER_FACTOR, STEER_FACTOR*self.outputTorque)/STEER_FACTOR
+      self.outputTorque -= 0.01
     if random() < 0.01:
       print("Right" if L1 > 0 else "Left")
 

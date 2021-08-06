@@ -87,7 +87,7 @@ def only_toyota_left(candidate_cars):
 
 # **** for use live only ****
 def fingerprint(logcan, sendcan):
-  fixed_fingerprint = "TOYOTA HIGHLANDER HYBRID 2020"
+  fixed_fingerprint = "HONDA CR-V 2017"
   skip_fw_query = os.environ.get('SKIP_FW_QUERY', False)
 
   if not fixed_fingerprint and not skip_fw_query:
