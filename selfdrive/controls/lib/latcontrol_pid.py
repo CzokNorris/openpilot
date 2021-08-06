@@ -52,24 +52,23 @@ def get_model_input(phi, v, M, IMU_v, IMU_alpha, M_fut):
   return np.concatenate([phi_out, v_out, M_out, IMU_v_out[0], IMU_v_out[1], IMU_v_out[2], IMU_alpha_out[0], IMU_alpha_out[1], IMU_alpha_out[2]])
 
 
-def apply_std_steer_torque_limits(apply_torque, apply_torque_last, driver_torque, LIMITS) -> int:
-
-  # limits due to driver torque
-  driver_max_torque = LIMITS.STEER_MAX + (LIMITS.STEER_DRIVER_ALLOWANCE + driver_torque * LIMITS.STEER_DRIVER_FACTOR) * LIMITS.STEER_DRIVER_MULTIPLIER
-  driver_min_torque = -LIMITS.STEER_MAX + (-LIMITS.STEER_DRIVER_ALLOWANCE + driver_torque * LIMITS.STEER_DRIVER_FACTOR) * LIMITS.STEER_DRIVER_MULTIPLIER
-  max_steer_allowed = max(min(LIMITS.STEER_MAX, driver_max_torque), 0)
-  min_steer_allowed = min(max(-LIMITS.STEER_MAX, driver_min_torque), 0)
-  apply_torque = clip(apply_torque, min_steer_allowed, max_steer_allowed)
+maxSteer = 1500
+up = 10
+down = 25
+def apply_steer_torque_limits(apply_torque, apply_torque_last):
+  apply_torque = clip(apply_torque, -maxSteer, maxSteer)
 
   # slow rate if steer torque increases in magnitude
   if apply_torque_last > 0:
-    apply_torque = clip(apply_torque, max(apply_torque_last - LIMITS.STEER_DELTA_DOWN, -LIMITS.STEER_DELTA_UP),
-                        apply_torque_last + LIMITS.STEER_DELTA_UP)
+    apply_torque = clip(apply_torque,
+                        max(apply_torque_last - down, -up),
+                        apply_torque_last + up)
   else:
-    apply_torque = clip(apply_torque, apply_torque_last - LIMITS.STEER_DELTA_UP,
-                        min(apply_torque_last + LIMITS.STEER_DELTA_DOWN, LIMITS.STEER_DELTA_UP))
+    apply_torque = clip(apply_torque,
+                        apply_torque_last - up,
+                        min(apply_torque_last + down, up))
 
-  return int(round(float(apply_torque))) # int sems unneded
+  return int(round(float(apply_torque)))
 
 class ModelControls:
   def __init__(self):
@@ -130,9 +129,9 @@ class ModelControls:
 
     #Poenostavljena logika: Ali je trenutni navor dovolj velik?
     if L1 > 0:
-      self.outputTorque = apply_std_steer_torque_limits(-STEER_FACTOR, STEER_FACTOR*self.outputTorque, CS.steeringTorque, P)/STEER_FACTOR
+      self.outputTorque = apply_steer_torque_limits(-STEER_FACTOR, STEER_FACTOR*self.outputTorque)/STEER_FACTOR
     else:
-      self.outputTorque = apply_std_steer_torque_limits(STEER_FACTOR, STEER_FACTOR*self.outputTorque, CS.steeringTorque, P)/STEER_FACTOR
+      self.outputTorque = apply_steer_torque_limits(STEER_FACTOR, STEER_FACTOR*self.outputTorque)/STEER_FACTOR
     if random() < 0.01:
       print("Right" if L1 > 0 else "Left")
 
@@ -142,7 +141,6 @@ class LatControlPID():
   def __init__(self, CP):
     self.pid = PIController((CP.lateralTuning.pid.kpBP, CP.lateralTuning.pid.kpV),
                             (CP.lateralTuning.pid.kiBP, CP.lateralTuning.pid.kiV),
-                            (CP.lateralTuning.pid.kdBP, CP.lateralTuning.pid.kdV),
                             k_f=CP.lateralTuning.pid.kf, pos_limit=1.0, neg_limit=-1.0,
                             sat_limit=CP.steerLimitTimer)
     self.count = 0
@@ -189,7 +187,6 @@ class LatControlPID():
       pid_log.p = self.pid.p
       pid_log.i = self.pid.i
       pid_log.f = self.pid.f
-      pid_log.d = self.pid.d
       pid_log.saturated = bool(self.pid.saturated)
       pid_log.angleError = 1 if self.model.active else 0
 
@@ -209,10 +206,9 @@ class LatControlPID():
 
       if self.model.active:
         output_steer = self.model.outputTorque
-        pid_log.p = 0
-        pid_log.i = 0
         pid_log.f = 0
-        pid_log.d = angle_steers_des # desired angle, good for plotting
+        pid_log.p = 0
+        pid_log.i = angle_steers_des # desired angle, good for plotting
       #/Parse the model info
       
       pid_log.output = output_steer
