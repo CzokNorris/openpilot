@@ -228,8 +228,8 @@ class Controls:
                                                  LaneChangeState.laneChangeFinishing]:
       self.events.add(EventName.laneChange)
 
-    # if self.can_rcv_error or not CS.canValid:
-    #   self.events.add(EventName.canError)
+    if self.can_rcv_error or not CS.canValid:
+      self.events.add(EventName.canError)
 
     safety_mismatch = self.sm['pandaState'].safetyModel != self.CP.safetyModel or self.sm['pandaState'].safetyParam != self.CP.safetyParam
     if safety_mismatch or self.mismatch_counter >= 200:
@@ -242,13 +242,13 @@ class Controls:
       self.events.add(EventName.radarFault)
     elif not self.sm.valid["pandaState"]:
       self.events.add(EventName.usbError)
-    # elif not self.sm.all_alive_and_valid():
-    #   self.events.add(EventName.commIssue)
-    #   if not self.logged_comm_issue:
-    #     invalid = [s for s, valid in self.sm.valid.items() if not valid]
-    #     not_alive = [s for s, alive in self.sm.alive.items() if not alive]
-    #     cloudlog.event("commIssue", invalid=invalid, not_alive=not_alive)
-    #     self.logged_comm_issue = True
+    elif not self.sm.all_alive_and_valid():
+      self.events.add(EventName.commIssue)
+      if not self.logged_comm_issue:
+        invalid = [s for s, valid in self.sm.valid.items() if not valid]
+        not_alive = [s for s, alive in self.sm.alive.items() if not alive]
+        cloudlog.event("commIssue", invalid=invalid, not_alive=not_alive)
+        self.logged_comm_issue = True
     else:
       self.logged_comm_issue = False
 
@@ -292,8 +292,8 @@ class Controls:
         if not self.sm['liveLocationKalman'].gpsOK and (self.distance_traveled > 1000):
           # Not show in first 1 km to allow for driving out of garage. This event shows after 5 minutes
           self.events.add(EventName.noGps)
-      # if not self.sm.all_alive(self.camera_packets):
-      #   self.events.add(EventName.cameraMalfunction)
+      if not self.sm.all_alive(self.camera_packets):
+        self.events.add(EventName.cameraMalfunction)
       if self.sm['modelV2'].frameDropPerc > 20:
         self.events.add(EventName.modeldLagging)
       if self.sm['liveLocationKalman'].excessiveResets:
