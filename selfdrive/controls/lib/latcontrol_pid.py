@@ -109,9 +109,9 @@ class ModelControls:
 
     #Poenostavljena logika: Ali je trenutni navor dovolj velik?
     if L1 > 0:
-      self.outputTorque += 0.01
-    else:
       self.outputTorque -= 0.01
+    else:
+      self.outputTorque += 0.01
     if random() < 0.01:
       print("Right" if L1 > 0 else "Left")
 
