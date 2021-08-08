@@ -4,17 +4,15 @@ from selfdrive.controls.lib.pid import PIController
 from selfdrive.controls.lib.drive_helpers import get_steer_max
 from cereal import log, messaging
 import numpy as np
-from selfdrive.car.volkswagen.values import CarControllerParams as P
 
 from selfdrive.controls.lib.drive_helpers import get_lag_adjusted_curvature
-from common.numpy_fast import clip
 from random import random
 
 MODEL_MIN_SPEED = 90 / 3.6 # minimum speed to use model
 
 
 #steering angle, speed, torque, IMU_linear, IMU_angular
-norm = (8.699999809265137, 34.91470718383789, 1.0, [16.254562377929688, 4.331634521484375, 5.190582275390625], [0.05810546875, 0.2753143310546875, 0.081207275390625])
+norm = (8.699999809265137, 33.814537048339844, 0.5912221074104309, [14.811691284179688, 4.57684326171875, 5.190582275390625], [0.062835693359375, 0.2753143310546875, 0.1081390380859375])
 groups = [2, 10, 25, 10, 10]
 
 #Data storage timings
