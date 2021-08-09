@@ -12,7 +12,7 @@ MODEL_MIN_SPEED = 90 / 3.6 # minimum speed to use model
 
 
 #steering angle, speed, torque, IMU_linear, IMU_angular
-norm = (8.699999809265137, 33.814537048339844, 0.5912221074104309, [14.811691284179688, 4.57684326171875, 5.190582275390625], [0.062835693359375, 0.2753143310546875, 0.1081390380859375])
+norm = (9.399999618530273, 31.629016876220703, 1.0, [15.630035400390625, 4.776702880859375, 5.33892822265625], [0.062774658203125, 0.1626739501953125, 0.129058837890625])
 groups = [2, 10, 25, 10, 10]
 
 #Data storage timings
@@ -20,9 +20,9 @@ prev_data = 100
 fwd_data = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 
 try:
-  wb = np.load('/data/openpilot/model_spektorV2_weights.npz', allow_pickle=True)
+  wb = np.load('/data/openpilot/model_drock_weights.npz', allow_pickle=True)
 except:
-  wb = np.load('/home/gregor/openpilot/model_spektorV2_weights.npz', allow_pickle=True)
+  wb = np.load('/home/gregor/openpilot/model_drock_weights.npz', allow_pickle=True)
 w, b = wb['wb']
 
 def model(x):
