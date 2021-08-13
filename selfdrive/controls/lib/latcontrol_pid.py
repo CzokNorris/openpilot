@@ -101,7 +101,7 @@ class ModelControls:
     # predicted_angle = [get_lag_adjusted_curvature(CP, self.v[-1], lat_plan.psis, lat_plan.curvatures, lat_plan.curvatureRates)] + predicted_angle
 
     #L1 je negativen ce moramo precej bolj zaviti
-    a = 5
+    a = 2
     w = [a/(a+i) for i in range(len(predicted_angle))]
     L1 = sum([(predicted_angle[i]-steering_angle[i])*w[i] for i in range(len(predicted_angle))])
 
