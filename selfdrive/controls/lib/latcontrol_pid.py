@@ -196,9 +196,8 @@ class LatControlPID():
         for sensor in sensors.sensorEvents:
           if sensor.type == 1: # accelerometer
             self.IMU_v = sensor.acceleration.v
-          if sensor.type == 4:  # gyro
-            print(sensor.gyro.v)
-            self.IMU_alpha = sensor.gyro.v
+          if sensor.type == 16:  # gyro
+            self.IMU_alpha = sensor.gyroUncalibrated.v
       self.model.parse_logs(CS.steeringAngleDeg, CS.vEgo, self.M, self.IMU_v, self.IMU_alpha)
 
       if self.count % 2 == 0:
