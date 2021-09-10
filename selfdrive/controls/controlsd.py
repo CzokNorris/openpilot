@@ -199,8 +199,8 @@ class Controls:
       # under 7% of space free no enable allowed
       self.events.add(EventName.outOfSpace)
     # TODO: make tici threshold the same
-    if self.sm['deviceState'].memoryUsagePercent > (90 if TICI else 65) and not SIMULATION:
-      self.events.add(EventName.lowMemory)
+    # if self.sm['deviceState'].memoryUsagePercent > (90 if TICI else 65) and not SIMULATION:
+    #   self.events.add(EventName.lowMemory)
     cpus = list(self.sm['deviceState'].cpuUsagePercent)[:(-1 if EON else None)]
     if max(cpus, default=0) > 95 and not SIMULATION:
       self.events.add(EventName.highCpuUsage)
@@ -236,8 +236,8 @@ class Controls:
                                                  LaneChangeState.laneChangeFinishing]:
       self.events.add(EventName.laneChange)
 
-    if self.can_rcv_error or not CS.canValid:
-      self.events.add(EventName.canError)
+    # if self.can_rcv_error or not CS.canValid:
+    #   self.events.add(EventName.canError)
 
     safety_mismatch = self.sm['pandaState'].safetyModel != self.CP.safetyModel or self.sm['pandaState'].safetyParam != self.CP.safetyParam
     if safety_mismatch or self.mismatch_counter >= 200:
@@ -470,7 +470,7 @@ class Controls:
                                                                              lat_plan.curvatures,
                                                                              lat_plan.curvatureRates)
       actuators.steer, actuators.steeringAngleDeg, lac_log = self.LaC.update(self.active, CS, self.CP, self.VM, params,
-                                                                             desired_curvature, desired_curvature_rate)
+                                                                             desired_curvature, lat_plan)
     else:
       lac_log = log.ControlsState.LateralDebugState.new_message()
       if self.sm.rcv_frame['testJoystick'] > 0 and self.active:
