@@ -28,7 +28,7 @@ from selfdrive.manager.process_config import managed_processes
 
 LDW_MIN_SPEED = 31 * CV.MPH_TO_MS
 LANE_DEPARTURE_THRESHOLD = 0.1
-STEER_ANGLE_SATURATION_TIMEOUT = 1.0 / DT_CTRL
+STEER_ANGLE_SATURATION_TIMEOUT = 10.0 / DT_CTRL
 STEER_ANGLE_SATURATION_THRESHOLD = 2.5  # Degrees
 
 SIMULATION = "SIMULATION" in os.environ
@@ -497,8 +497,8 @@ class Controls:
 
       if len(lat_plan.dPathPoints):
         # Check if we deviated from the path
-        left_deviation = actuators.steer > 0 and lat_plan.dPathPoints[0] < -0.1
-        right_deviation = actuators.steer < 0 and lat_plan.dPathPoints[0] > 0.1
+        left_deviation = actuators.steer > 0 and lat_plan.dPathPoints[0] < -0.2
+        right_deviation = actuators.steer < 0 and lat_plan.dPathPoints[0] > 0.2
 
         if left_deviation or right_deviation:
           self.events.add(EventName.steerSaturated)

@@ -222,7 +222,7 @@ void fill_meta(cereal::ModelDataV2::MetaData::Builder meta, const float *meta_da
     above_fcw_threshold_3 = above_fcw_threshold_3 && prev_brake_3ms2_probs[i] > FCW_THRESHOLD_3MS2;
   }
 
-  above_fcw_threshold = above_fcw_threshold || above_fcw_threshold_3;
+  above_fcw_threshold = above_fcw_threshold && above_fcw_threshold_3;
 
   auto disengage = meta.initDisengagePredictions();
   disengage.setT({2,4,6,8,10});
