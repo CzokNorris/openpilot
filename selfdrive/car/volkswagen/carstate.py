@@ -17,7 +17,7 @@ class CarState(CarStateBase):
     self.update = self.update_pq
     if CP.transmissionType == TransmissionType.automatic:
       self.shifter_values = can_define.dv["Getriebe_1"]['Waehlhebelposition__Getriebe_1_']
-    self.ok=False
+    #self.ok=False
     self.buttonStates = BUTTON_STATES.copy()
 
     
@@ -178,11 +178,8 @@ class CarState(CarStateBase):
     ret.doorOpen = bool(pt_cp.vl["Gate_Komf_1"]['GK1_Fa_Tuerkont'])
 
     # Update seatbelt fastened status.
-    #ret.seatbeltUnlatched = not bool(pt_cp.vl["Airbag_1"]["Gurtschalter_Fahrer"])
-    
-    #I have to override this, because my car has no seat belt sensors
     ret.seatbeltUnlatched = False
-    
+
     # Update driver preference for metric. VW stores many different unit
     # preferences, including separate units for for distance vs. speed.
     # We use the speed preference for OP.
@@ -218,8 +215,9 @@ class CarState(CarStateBase):
     ret.leftBlinker = bool(pt_cp.vl["Gate_Komf_1"]['GK1_Blinker_li'])
     ret.rightBlinker = bool(pt_cp.vl["Gate_Komf_1"]['GK1_Blinker_re'])
 
-    self.leftBlinker = ret.leftBlinker and self.ok
-    self.rightBlinker = ret.rightBlinker and self.ok
+    #self.leftBlinker = ret.leftBlinker and self.ok
+    #self.rightBlinker = ret.rightBlinker and self.ok
+
 
     # Read ACC hardware button type configuration info that has to pass thru
     # to the radar. Ends up being different for steering wheel buttons vs
@@ -242,8 +240,7 @@ class CarState(CarStateBase):
     self.parkingBrakeSet = bool(pt_cp.vl["Kombi_1"]['Bremsinfo'])  # FIXME: need to include an EPB check as well
     ret.espDisabled = bool(pt_cp.vl["Bremse_1"]['ESP_Passiv_getastet'])
 
-    self.ok |= ret.espDisabled
-
+    #self.ok |= ret.espDisabled
     return ret
 
   @staticmethod
