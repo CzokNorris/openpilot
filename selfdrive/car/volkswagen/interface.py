@@ -110,7 +110,7 @@ class CarInterface(CarInterfaceBase):
 
     events = self.create_common_events(ret, extra_gears=[GearShifter.eco, GearShifter.sport])
 
-    if self.CS.leftBlinker:
+    if self.CS.buttonStates["setCruise"] or self.CS.buttonStates["resumeCruise"] or self.CS.buttonStates["accelCruise"]:
       events.add(EventName.buttonEnable)
 
     #PQTIMEBOMB STUFF START
