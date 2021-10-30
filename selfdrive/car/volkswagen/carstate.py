@@ -178,8 +178,11 @@ class CarState(CarStateBase):
     ret.doorOpen = bool(pt_cp.vl["Gate_Komf_1"]['GK1_Fa_Tuerkont'])
 
     # Update seatbelt fastened status.
-    ret.seatbeltUnlatched = not bool(pt_cp.vl["Airbag_1"]["Gurtschalter_Fahrer"])
-
+    #ret.seatbeltUnlatched = not bool(pt_cp.vl["Airbag_1"]["Gurtschalter_Fahrer"])
+    
+    #I have to override this, because my car has no seat belt sensors
+    ret.seatbeltUnlatched = False
+    
     # Update driver preference for metric. VW stores many different unit
     # preferences, including separate units for for distance vs. speed.
     # We use the speed preference for OP.
