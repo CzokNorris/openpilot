@@ -67,6 +67,31 @@ def create_pq_steering_control(packer, bus, apply_steer, idx, lkas_enabled):
   values["HCA_Checksumme"] = dat[1] ^ dat[2] ^ dat[3] ^ dat[4]
   return packer.make_can_msg("HCA_1", bus, values)
 
+
+
+def create_pq_timebomb_defuse_spoofed_radar(packer, bus, counter):
+  values = {
+    "ACS_Zaehler": counter,
+    "ACS_Sta_ADR": 1,
+    "ACS_ADR_Schub": 0,
+    "ACS_Schubabsch": 0,
+    "ACS_StSt_Info": 1,
+    "ACS_MomEingriff": 0,
+    "ACS_Typ_ACC": 1,
+    "ACS_FreigSollB": 1,
+    "ACS_Sollbeschl": 0.5,
+    "ACS_Anhaltewunsch": 0,
+    "ACS_Fehler": 1,
+    "ACS_zul_Regelabw": 20,
+    "ACS_max_AendGrad": 20,
+  }
+
+  dat = packer.make_can_msg("ACC_System", bus, values)[2]
+  values["ACS_Checksum"] = dat[1] ^ dat[2] ^ dat[3] ^ dat[4] ^ dat[5] ^ dat[6] ^ dat[7]
+  return packer.make_can_msg("ACC_System", bus, values)
+
+
+
 def create_pq_hud_control(packer, bus, hca_enabled, steering_pressed, hud_alert, left_lane_visible, right_lane_visible,
                           ldw_lane_warning_left, ldw_lane_warning_right, ldw_side_dlc_tlc, ldw_dlc, ldw_tlc):
   if hca_enabled:
