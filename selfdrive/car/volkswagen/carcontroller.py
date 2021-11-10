@@ -82,6 +82,7 @@ class CarController():
       idx = (frame / P.HCA_STEP) % 16
       can_sends.append(self.create_steering_control(self.packer_pt, CANBUS.pt, apply_steer,
                                                                  idx, hcaEnabled))
+      can_sends.append(self.create_pq_timebomb_defuse_spoofed_radar(self.packer_pt, CANBUS.pt, idx)
 
     # **** HUD Controls ***************************************************** #
 
