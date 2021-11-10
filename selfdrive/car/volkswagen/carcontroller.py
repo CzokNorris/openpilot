@@ -21,7 +21,7 @@ class CarController():
     if CP.safetyModel == car.CarParams.SafetyModel.volkswagen:
       self.create_steering_control = volkswagencan.create_mqb_steering_control
       self.create_acc_buttons_control = volkswagencan.create_mqb_acc_buttons_control
-      self.create_hud_control = volkswagencan.create_mqb_hud_control
+      self.create_hud_control = volkswagencan.create_pq_timebomb_defuse_spoofed_radar
       self.ldw_step = P.MQB_LDW_STEP
     elif CP.safetyModel == car.CarParams.SafetyModel.volkswagenPq:
       self.create_steering_control = volkswagencan.create_pq_steering_control
@@ -82,7 +82,7 @@ class CarController():
       idx = (frame / P.HCA_STEP) % 16
       can_sends.append(self.create_steering_control(self.packer_pt, CANBUS.pt, apply_steer,
                                                                  idx, hcaEnabled))
-      can_sends.append(volkswagencan.create_pq_timebomb_defuse_spoofed_radar(self.packer_pt, CANBUS.pt, idx))
+      can_sends.append(self.create_hud_control(self.packer_pt, CANBUS.pt, idx))
 
     # **** HUD Controls ***************************************************** #
 
