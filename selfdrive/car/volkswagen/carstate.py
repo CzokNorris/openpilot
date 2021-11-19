@@ -9,7 +9,7 @@ from selfdrive.car.volkswagen.values import DBC_FILES, CANBUS, NetworkLocation, 
 class CarState(CarStateBase):
   def __init__(self, CP):
     super().__init__(CP)
-    can_define = CANDefine(DBC[CP.carFingerprint]['pt'])
+    can_define = CANDefine(DBC_FILES.mqb)
     
     self.ACC = PQacc()
 
@@ -294,7 +294,7 @@ class CarState(CarStateBase):
       signals += [("ACA_V_Wunsch", "ACC_GRA_Anziege", 0)]  # ACC set speed
       checks += [("ACC_GRA_Anziege", 25)]  # From J428 ACC radar control module
 
-    return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, CANBUS.pt)
+    return CANParser(DBC_FILES.mqb, signals, checks, CANBUS.pt)
 
   @staticmethod
   def get_cam_can_parser(CP):
