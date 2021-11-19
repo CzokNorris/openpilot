@@ -289,7 +289,7 @@ class CarState(CarStateBase):
                   ]
       checks += [("Motor_1", 100)]  # From J623 Engine control module
 
-    if CP.networkLocation == NWL.fwdCamera:
+    if CP.networkLocation == NetworkLocation.fwdCamera:
       # The ACC radar is here on CANBUS.pt
       signals += [("ACA_V_Wunsch", "ACC_GRA_Anziege", 0)]  # ACC set speed
       checks += [("ACC_GRA_Anziege", 25)]  # From J428 ACC radar control module
@@ -331,7 +331,7 @@ class CarState(CarStateBase):
     signals = []
     checks = []
 
-    if CP.networkLocation == NWL.gateway:
+    if CP.networkLocation == NetworkLocation.gateway:
       # The ACC radar is here on CANBUS.cam
       signals += [("ACA_V_Wunsch", "ACC_GRA_Anziege", 0)]  # ACC set speed
       checks += [("ACC_GRA_Anziege", 25)]  # From J428 ACC radar control module
