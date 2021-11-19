@@ -8,7 +8,6 @@ from selfdrive.car.volkswagen.values import DBC_FILES, CANBUS, NetworkLocation, 
 
 class CarState(CarStateBase):
   def __init__(self, CP):
-     def __init__(self, CP):
     super().__init__(CP)
     can_define = CANDefine(DBC[CP.carFingerprint]['pt'])
     
