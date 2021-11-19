@@ -85,7 +85,8 @@ def only_toyota_left(candidate_cars):
 
 # **** for use live only ****
 def fingerprint(logcan, sendcan):
-  fixed_fingerprint = "Generic Volkswagen PQ35/PQ46/NMS Platform Vehicle"
+  fixed_fingerprint = "VOLKSWAGEN GOLF 7TH GEN"
+  #"Generic Volkswagen PQ35/PQ46/NMS Platform Vehicle"
   skip_fw_query = 1
 
   if not fixed_fingerprint and not skip_fw_query:
