@@ -324,6 +324,23 @@ class CarState(CarStateBase):
         checks += MqbExtraSignals.bsm_radar_checks
 
     return CANParser(DBC_FILES.mqb, signals, checks, CANBUS.cam)
+  
+  @staticmethod
+  def get_pq_cam_can_parser(CP):
+    # TODO: Need to monitor LKAS camera, if present, for TLC/DLC/warning signals for passthru to SWA
+    signals = []
+    checks = []
+
+    if CP.networkLocation == NWL.gateway:
+      # The ACC radar is here on CANBUS.cam
+      signals += [("ACA_V_Wunsch", "ACC_GRA_Anziege", 0)]  # ACC set speed
+      checks += [("ACC_GRA_Anziege", 25)]  # From J428 ACC radar control module
+
+    if CP.enableGasInterceptor:
+      signals += [("INTERCEPTOR_GAS", "GAS_SENSOR", 0), ("INTERCEPTOR_GAS2", "GAS_SENSOR", 0)]
+      checks += [("GAS_SENSOR", 50)]
+
+    return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, CANBUS.cam)
 
 class MqbExtraSignals:
   # Additional signal and message lists for optional or bus-portable controllers
