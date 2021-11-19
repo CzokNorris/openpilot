@@ -8,13 +8,34 @@ from selfdrive.car.volkswagen.values import DBC_FILES, CANBUS, NetworkLocation, 
 
 class CarState(CarStateBase):
   def __init__(self, CP):
+     def __init__(self, CP):
     super().__init__(CP)
-    can_define = CANDefine(DBC_FILES.mqb)
-    if CP.transmissionType == TransmissionType.automatic:
-      self.shifter_values = can_define.dv["Getriebe_11"]["GE_Fahrstufe"]
-    elif CP.transmissionType == TransmissionType.direct:
-      self.shifter_values = can_define.dv["EV_Gearshift"]["GearPosition"]
-    self.hca_status_values = can_define.dv["LH_EPS_03"]["EPS_HCA_Status"]
+    can_define = CANDefine(DBC[CP.carFingerprint]['pt'])
+    
+    self.ACC = PQacc()
+
+    ### START OF MAIN CONFIG OPTIONS ###
+    ### Do NOT modify here, modify in /data/bb_openpilot.cfg and reboot
+    self.useTeslaRadar = CP.enableGasInterceptor
+    self.radarVIN = "5YJSB7E17HF207544" # carlos_ddd
+    self.radarOffset = 0.
+    self.radarPosition = 1
+    self.radarEpasType = 3
+    ### END OF MAIN CONFIG OPTIONS ###
+
+    # Configure for PQ35/PQ46/NMS network messaging
+    self.get_can_parser = self.get_pq_can_parser
+    self.get_cam_can_parser = self.get_pq_cam_can_parser
+    self.update = self.update_pq
+    self.gsaHystActive = False   # gearshift assistant hysteris
+    self.gsaIntvActive = False
+    self.gsaSpeedFreeze = 0.0
+    if CP.transmissionType == TRANS.automatic:
+      self.shifter_values = can_define.dv["Getriebe_1"]['Waehlhebelposition__Getriebe_1_']
+    if CP.enableGasInterceptor:
+      self.openpilot_enabled = False
+    
+
     self.buttonStates = BUTTON_STATES.copy()
 
   def update_pq(self, pt_cp, cam_cp, acc_cp, trans_type):
