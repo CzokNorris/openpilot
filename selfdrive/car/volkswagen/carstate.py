@@ -11,7 +11,7 @@ class CarState(CarStateBase):
     super().__init__(CP)
     can_define = CANDefine(DBC_FILES.mqb)
     
-    self.ACC = PQacc()
+    #self.ACC = PQacc()
 
     ### START OF MAIN CONFIG OPTIONS ###
     ### Do NOT modify here, modify in /data/bb_openpilot.cfg and reboot
