@@ -276,6 +276,7 @@ class CarState(CarStateBase):
       ("Motor_2", 50),            # From J623 Engine control module
       ("Lenkhilfe_2", 20),        # From J500 Steering Assist with integrated sensors
       ("Gate_Komf_1", 10),        # From J533 CAN gateway
+      ("Bremse_1", 10),
       ("Einheiten_1", 1),         # From J??? cluster or gateway
     ]
 
