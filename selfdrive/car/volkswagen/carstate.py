@@ -78,9 +78,9 @@ class CarState(CarStateBase):
 
 
     # Update gear and/or clutch position data.
-    if trans_type == TRANS.automatic:
+    if trans_type == TransmissionType.automatic:
       ret.gearShifter = self.parse_gear_shifter(self.shifter_values.get(pt_cp.vl["Getriebe_1"]['Waehlhebelposition__Getriebe_1_'], None))
-    elif trans_type == TRANS.manual:
+    elif trans_type == TransmissionType.manual:
       ret.clutchPressed = not pt_cp.vl["Motor_1"]['Kupplungsschalter']
       reverse_light = bool(pt_cp.vl["Gate_Komf_1"]['GK1_Rueckfahr'])
       if reverse_light:
@@ -148,7 +148,7 @@ class CarState(CarStateBase):
     ret.cruiseState.speed = self.v_ACC * CV.KPH_TO_MS
 
     # for manual cars only (gearshift assistant)
-    if trans_type == TRANS.manual:
+    if trans_type == TransmissionType.manual:
       # get car's gearshift advice
 #      if (0 < self.gearDesired < 7) and (0 < self.gearCurrent < 7):                     # 0 = gear not detected
 #        self.gearAdvice = self.gearDesired - self.gearCurrent
@@ -279,10 +279,10 @@ class CarState(CarStateBase):
       ("Einheiten_1", 1),         # From J??? cluster or gateway
     ]
 
-    if CP.transmissionType == TRANS.automatic:
+    if CP.transmissionType == TransmissionType.automatic:
       signals += [("Waehlhebelposition__Getriebe_1_", "Getriebe_1", 0)]  # Auto trans gear selector position
       checks += [("Getriebe_1", 100)]  # From J743 Auto transmission control module
-    elif CP.transmissionType == TRANS.manual:
+    elif CP.transmissionType == TransmissionType.manual:
       signals += [("Kupplungsschalter", "Motor_1", 0),  # Clutch switch
                   ("GK1_Rueckfahr", "Gate_Komf_1", 0),  # Reverse light from BCM
                   ("Motordrehzahl", "Motor_1", 0),      # engine RPM
