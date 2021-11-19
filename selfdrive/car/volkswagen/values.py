@@ -23,9 +23,9 @@ class CarControllerParams:
   # Limiting rate-of-change based on real-world testing and Comma's safety
   # requirements for minimum time to lane departure.
   STEER_MAX = 300                # Max heading control assist torque 3.00 Nm
-  STEER_DELTA_UP = 4             # Max HCA reached in 1.50s (STEER_MAX / (50Hz * 1.50))
+  STEER_DELTA_UP = 10             # Max HCA reached in 1.50s (STEER_MAX / (50Hz * 1.50))
   STEER_DELTA_DOWN = 10          # Min HCA reached in 0.60s (STEER_MAX / (50Hz * 0.60))
-  STEER_DRIVER_ALLOWANCE = 80
+  STEER_DRIVER_ALLOWANCE = 60
   STEER_DRIVER_MULTIPLIER = 3    # weight driver torque heavily
   STEER_DRIVER_FACTOR = 1        # from dbc
 
@@ -34,7 +34,7 @@ class CANBUS:
   cam = 2
 
 class DBC_FILES:
-  mqb = "vw_mqb_2010"  # Used for all cars with MQB-style CAN messaging
+  mqb = "vw_golf_mk4"  # Used for all cars with MQB-style CAN messaging
 
 DBC = defaultdict(lambda: dbc_dict(DBC_FILES.mqb, None))  # type: Dict[str, Dict[str, str]]
 
