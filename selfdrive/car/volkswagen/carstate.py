@@ -214,7 +214,7 @@ class CarState(CarStateBase):
     return ret
   
   @staticmethod
-  def get_can_parser(CP):
+  def get_pq_can_parser(CP):
     signals = [
       # sig_name, sig_address, default
       ("LH3_BLW", "Lenkhilfe_3", 0),                # Absolute steering angle
@@ -261,6 +261,7 @@ class CarState(CarStateBase):
       ("ESP_Eingriff", "Bremse_1", 0),              # ABS stability intervention
       ("ASR_Anforderung", "Bremse_1", 0),           # ABS slip detected      
     ]
+    print("prepared messages")
 
     checks = [
       # sig_address, frequency
@@ -279,6 +280,7 @@ class CarState(CarStateBase):
       ("Bremse_1", 10),
       ("Einheiten_1", 1),         # From J??? cluster or gateway
     ]
+    print("prepared checks")
 
     if CP.transmissionType == TransmissionType.automatic:
       signals += [("Waehlhebelposition__Getriebe_1_", "Getriebe_1", 0)]  # Auto trans gear selector position
@@ -294,7 +296,7 @@ class CarState(CarStateBase):
       # The ACC radar is here on CANBUS.pt
       signals += [("ACA_V_Wunsch", "ACC_GRA_Anziege", 0)]  # ACC set speed
       checks += [("ACC_GRA_Anziege", 25)]  # From J428 ACC radar control module
-
+    print("prepared can paser fields")
     return CANParser(DBC_FILES.mqb, signals, checks, CANBUS.pt)
 
   @staticmethod
