@@ -282,20 +282,9 @@ class CarState(CarStateBase):
     ]
     print("prepared checks")
 
-    if CP.transmissionType == TransmissionType.automatic:
-      signals += [("Waehlhebelposition__Getriebe_1_", "Getriebe_1", 0)]  # Auto trans gear selector position
-      checks += [("Getriebe_1", 100)]  # From J743 Auto transmission control module
-    elif CP.transmissionType == TransmissionType.manual:
-      signals += [("Kupplungsschalter", "Motor_1", 0),  # Clutch switch
-                  ("GK1_Rueckfahr", "Gate_Komf_1", 0),  # Reverse light from BCM
-                  ("Motordrehzahl", "Motor_1", 0),      # engine RPM
-                  ]
-      checks += [("Motor_1", 100)]  # From J623 Engine control module
+    signals += [("Waehlhebelposition__Getriebe_1_", "Getriebe_1", 0)]  # Auto trans gear selector position
+    checks += [("Getriebe_1", 100)]  # From J743 Auto transmission control module
 
-    if CP.networkLocation == NetworkLocation.fwdCamera:
-      # The ACC radar is here on CANBUS.pt
-      signals += [("ACA_V_Wunsch", "ACC_GRA_Anziege", 0)]  # ACC set speed
-      checks += [("ACC_GRA_Anziege", 25)]  # From J428 ACC radar control module
     print("prepared can paser fields")
     return CANParser(DBC_FILES.mqb, signals, checks, CANBUS.pt)
 
