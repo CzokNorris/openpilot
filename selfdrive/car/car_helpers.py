@@ -175,12 +175,15 @@ def fingerprint(logcan, sendcan):
 
 
 def get_car(logcan, sendcan):
+  print("getting car")
   candidate, fingerprints, vin, car_fw, source, exact_match = fingerprint(logcan, sendcan)
-
+  print("got car candidate)
   if candidate is None:
+    print("no fingerprint match found for get_car")
     cloudlog.warning("car doesn't match any fingerprints: %r", fingerprints)
     candidate = "mock"
-
+  print(candidate)
+        
   CarInterface, CarController, CarState = interfaces[candidate]
   car_params = CarInterface.get_params(candidate, fingerprints, car_fw)
   car_params.carVin = vin
