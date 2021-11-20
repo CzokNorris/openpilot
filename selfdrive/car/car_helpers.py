@@ -176,9 +176,7 @@ def fingerprint(logcan, sendcan):
 
 def get_car(logcan, sendcan):
   candidate, fingerprints, vin, car_fw, source, exact_match = fingerprint(logcan, sendcan)
-  print("got car candidate")
   if candidate is None:
-    print("no fingerprint match found for get_car")
     cloudlog.warning("car doesn't match any fingerprints: %r", fingerprints)
     candidate = "mock"
   print(candidate)
@@ -189,6 +187,4 @@ def get_car(logcan, sendcan):
   car_params.carFw = car_fw
   car_params.fingerprintSource = source
   car_params.fuzzyFingerprint = not exact_match
-  print("created car params")
-  print(CarInterface(car_params, CarController, CarState))
   return CarInterface(car_params, CarController, CarState), car_params
