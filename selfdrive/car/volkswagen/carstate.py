@@ -214,7 +214,7 @@ class CarState(CarStateBase):
     return ret
   
   @staticmethod
-  def get_pq_can_parser(CP):
+  def get_can_parser(CP):
     signals = [
       # sig_name, sig_address, default
       ("LH3_BLW", "Lenkhilfe_3", 0),                # Absolute steering angle
