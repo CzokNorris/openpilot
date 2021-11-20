@@ -78,19 +78,9 @@ class CarState(CarStateBase):
 
 
     # Update gear and/or clutch position data.
-    if trans_type == TransmissionType.automatic:
-      ret.gearShifter = self.parse_gear_shifter(self.shifter_values.get(pt_cp.vl["Getriebe_1"]['Waehlhebelposition__Getriebe_1_'], None))
-    elif trans_type == TransmissionType.manual:
-      ret.clutchPressed = not pt_cp.vl["Motor_1"]['Kupplungsschalter']
-      reverse_light = bool(pt_cp.vl["Gate_Komf_1"]['GK1_Rueckfahr'])
-      if reverse_light:
-        ret.gearShifter = GEAR.reverse
-      else:
-        ret.gearShifter = GEAR.drive
-      self.engineRPM = pt_cp.vl["Motor_1"]['Motordrehzahl']  # engine RPM for gear shift assist
-#      self.gearDesired = pt_cp.vl["Getriebe_2"]['eingelegte_Fahrstufe']                 # gear ECU wants                  # 2do: needs to be added to signals / checks
-#      self.gearCurrent = pt_cp.vl["Getriebe_2"]['Ganganzeige_Kombi___Getriebe_Va']      # gear ECU detected
 
+    ret.gearShifter = self.parse_gear_shifter(self.shifter_values.get(pt_cp.vl["Getriebe_1"]['Waehlhebelposition__Getriebe_1_'], None))
+    
     # Update door and trunk/hatch lid open status.
     # TODO: need to locate signals for other three doors if possible
     ret.doorOpen = bool(pt_cp.vl["Gate_Komf_1"]['GK1_Fa_Tuerkont'])
