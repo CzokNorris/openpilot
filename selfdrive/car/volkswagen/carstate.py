@@ -69,7 +69,7 @@ class CarState(CarStateBase):
 
     ret.brake = pt_cp.vl["Bremse_5"]['Bremsdruck'] / 250.0  # FIXME: this is pressure in Bar, not sure what OP expects
     ret.brakePressed = bool(pt_cp.vl["Motor_2"]['Bremstestschalter'])
-    ret.brakeLights = bool(pt_cp.vl["Motor_2"]['Bremslichtschalter'])
+    #ret.brakeLights = bool(pt_cp.vl["Motor_2"]['Bremslichtschalter'])
 
     # Additional safety checks performed in CarInterface.
     self.parkingBrakeSet = bool(pt_cp.vl["Kombi_1"]['Bremsinfo'])  # FIXME: need to include an EPB check as well
@@ -95,8 +95,8 @@ class CarState(CarStateBase):
     # TODO: need to locate signals for other three doors if possible
     ret.doorOpen = bool(pt_cp.vl["Gate_Komf_1"]['GK1_Fa_Tuerkont'])
 
-    # Update seatbelt fastened status.
-    ret.seatbeltUnlatched = not bool(pt_cp.vl["Airbag_1"]["Gurtschalter_Fahrer"])
+    # Update seatbelt fastened status. Overrideen, my Caddy has no seatbelt sensor
+    ret.seatbeltUnlatched = 0
 
     # Update driver preference for metric. VW stores many different unit
     # preferences, including separate units for for distance vs. speed.
