@@ -185,10 +185,13 @@ def get_car(logcan, sendcan):
   print(candidate)
         
   CarInterface, CarController, CarState = interfaces[candidate]
+  print("pulled car interface")
   car_params = CarInterface.get_params(candidate, fingerprints, car_fw)
   car_params.carVin = vin
   car_params.carFw = car_fw
   car_params.fingerprintSource = source
   car_params.fuzzyFingerprint = not exact_match
-
+  print("created car params")
+  print(car_params)
+  print(CarInterface(car_params, CarController, CarState))
   return CarInterface(car_params, CarController, CarState), car_params
