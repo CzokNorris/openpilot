@@ -14,12 +14,9 @@ class CarInterface(CarInterfaceBase):
     self.displayMetricUnitsPrev = None
     self.buttonStatesPrev = BUTTON_STATES.copy()
 
-    if CP.networkLocation == NetworkLocation.fwdCamera:
-      self.ext_bus = CANBUS.pt
-      self.cp_ext = self.cp
-    else:
-      self.ext_bus = CANBUS.cam
-      self.cp_ext = self.cp_cam
+    self.ext_bus = CANBUS.pt
+    self.cp_ext = self.cp
+
 
   @staticmethod
   def get_params(candidate, fingerprint=gen_empty_fingerprint(), car_fw=None):
