@@ -85,7 +85,7 @@ class CarState(CarStateBase):
     ret.doorOpen = bool(pt_cp.vl["Gate_Komf_1"]['GK1_Fa_Tuerkont'])
 
     # Update seatbelt fastened status. Overrideen, my Caddy has no seatbelt sensor
-    ret.seatbeltUnlatched = 0
+    ret.seatbeltUnlatched = False
 
     # Update driver preference for metric. VW stores many different unit
     # preferences, including separate units for for distance vs. speed.
