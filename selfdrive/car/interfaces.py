@@ -26,23 +26,34 @@ ACCEL_MIN = -3.5
 
 class CarInterfaceBase():
   def __init__(self, CP, CarController, CarState):
+    print("initing car interface base")
     self.CP = CP
+    print("loaded parent")
     self.VM = VehicleModel(CP)
-
+    print("loaded model")
+    print(self.VM)
     self.frame = 0
     self.steer_warning = 0
     self.steering_unpressed = 0
     self.low_speed_alert = False
-
+    
     if CarState is not None:
+      print("carstate is not None")
       self.CS = CarState(CP)
+      print("inited CarState")
       self.cp = self.CS.get_can_parser(CP)
+      print("got can parser")
       self.cp_cam = self.CS.get_cam_can_parser(CP)
+      print("got cam can parser")
       self.cp_body = self.CS.get_body_can_parser(CP)
-
+      print("got body can parser")
+      
     self.CC = None
     if CarController is not None:
+      print("car cotroller is not None")
       self.CC = CarController(self.cp.dbc_name, CP, self.VM)
+      print("initialized car controller")
+      print(self.CC)
 
   @staticmethod
   def get_pid_accel_limits(CP, current_speed, cruise_speed):
