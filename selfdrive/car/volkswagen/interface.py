@@ -138,6 +138,10 @@ class CarInterface(CarInterfaceBase):
     elif candidate == CAR.SKODA_SUPERB_MK3:
       ret.mass = 1505 + STD_CARGO_KG
       ret.wheelbase = 2.84
+      
+    elif candidate == CAR.GENERICPQ:
+      ret.mass = 1575 + STD_CARGO_KG
+      ret.wheelbase = 2.58
 
     else:
       raise ValueError("unsupported car %s" % candidate)
