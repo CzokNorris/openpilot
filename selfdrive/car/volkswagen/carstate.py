@@ -301,7 +301,7 @@ class CarState(CarStateBase):
 
   @staticmethod
   def get_cam_can_parser(CP):
-
+    print("getitng mqb cam car parseer")
     signals = []
     checks = []
 
@@ -330,6 +330,7 @@ class CarState(CarStateBase):
   
   @staticmethod
   def get_pq_cam_can_parser(CP):
+    print("getting pq cam car parser")
     # TODO: Need to monitor LKAS camera, if present, for TLC/DLC/warning signals for passthru to SWA
     signals = []
     checks = []
