@@ -187,5 +187,4 @@ def get_car(logcan, sendcan):
   car_params.carFw = car_fw
   car_params.fingerprintSource = source
   car_params.fuzzyFingerprint = not exact_match
-  print(interfaces)
   return CarInterface(car_params, CarController, CarState), car_params
