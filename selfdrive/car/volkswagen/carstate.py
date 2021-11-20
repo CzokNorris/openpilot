@@ -333,7 +333,7 @@ class CarState(CarStateBase):
       signals += [("INTERCEPTOR_GAS", "GAS_SENSOR", 0), ("INTERCEPTOR_GAS2", "GAS_SENSOR", 0)]
       checks += [("GAS_SENSOR", 50)]
 
-    return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, CANBUS.cam)
+    return CANParser(DBC_FILES.mqb, signals, checks, CANBUS.cam)
 
 class MqbExtraSignals:
   # Additional signal and message lists for optional or bus-portable controllers
