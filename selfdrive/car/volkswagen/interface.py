@@ -8,6 +8,7 @@ EventName = car.CarEvent.EventName
 
 class CarInterface(CarInterfaceBase):
   def __init__(self, CP, CarController, CarState):
+    print("going to init super of CarInterface")
     super().__init__(CP, CarController, CarState)
     print("initalizing car interface")
     self.displayMetricUnitsPrev = None
