@@ -29,8 +29,7 @@ class CarState(CarStateBase):
     self.gsaHystActive = False   # gearshift assistant hysteris
     self.gsaIntvActive = False
     self.gsaSpeedFreeze = 0.0
-    if CP.transmissionType == TransmissionType.automatic:
-      self.shifter_values = can_define.dv["Getriebe_1"]['Waehlhebelposition__Getriebe_1_']
+    self.shifter_values = can_define.dv["Getriebe_1"]['Waehlhebelposition__Getriebe_1_']
     if CP.enableGasInterceptor:
       self.openpilot_enabled = False
     
